@@ -1,0 +1,79 @@
+﻿@page
+@model IndexModel
+
+
+<div class="text-center">
+  <form method="post">
+    <div>
+      <label for="searchGenre">Discord Bot token:</label>
+      <input type="text" name="Token" value="" />
+      <input type="submit" name="Button" value="Start It!" /><br />
+
+      <br />
+    </div>
+  </form>
+</div>
+<div>
+  <form action="" method="get">
+    
+  <label for="status">Choose a status:</label>
+    <select name="status" id="status">
+      <option value="dnd">dnd</option>
+      <option value="online">online</option>
+      <option value="idle">idle</option>
+      <option value="offline">offline</option>
+    </select>
+
+    <input type="submit" value="+">
+    <br>
+    <label for="Game Activity">Game Activity</label>
+    <input type="text" name="activity" value="" id="activity" />
+    <input type="submit" value="+" />
+    <br>
+    
+  </form>
+  
+
+
+
+@using DiscordRPC.IO
+@using DiscordRPC.Logging
+@using Discord.Commands
+@using Discord.Net
+@using Discord
+@{
+
+  
+  ViewData["Title"] = "Home";
+  
+  var client = new Discord.WebSocket.DiscordSocketClient();
+  if (Request.Method == "POST")
+  {
+
+    var dunno = Request.Form["Token"];
+
+    await client.LoginAsync(Discord.TokenType.Bot, dunno, true);
+    await client.StartAsync();
+
+    if (Request.Query["status"] == "dnd")
+    {
+      await client.SetStatusAsync(Discord.UserStatus.DoNotDisturb);
+    }
+    if (Request.Query["status"] == "idle")
+    {
+      await client.SetStatusAsync(Discord.UserStatus.Idle);
+    }
+    if (Request.Query["status"] == "online")
+    {
+      await client.SetStatusAsync(Discord.UserStatus.Online);
+    }
+    if (Request.Query["status"] == "offline")
+    {
+      await client.SetStatusAsync(Discord.UserStatus.Offline);
+    }
+    await client.SetGameAsync(Request.Query["activity"]);
+    
+  }
+  
+  
+}

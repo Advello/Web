@@ -1,0 +1,58 @@
+@page
+@model IndexModel
+
+    <div class="text-center">
+  <label for="Discordrpc" class="rpc">Discord Rich Presence</label>
+  <style>
+   .rpc {
+     color: green;     
+   }
+  </style>
+    </div>
+<div class="text-center">
+<form action="" method="post">
+App ID: <input type="text" name="appid" id="appid"> <input type="submit" value="Start" /> <br> <br>
+</form>
+</div>
+<div>
+<form action="" method="get">
+State: <input type="text" name="State" id="State"> <input type="submit" value="+"/><br> <br>
+Details: <input type="text" name="Details" id="Details"> <input type="submit" value="+"/> <br> <br>
+LargeImageText: <input type="text" name="Largeimgtxt" id="Largeimgtxt"> <input type="submit" value="+"/><br> <br>
+SmallImageText: <input type="text" name="Smallimgtxt" id="Smallimgtxt"> <input type="submit" value="+"/><br> <br>
+LargeImageKey: <input type="text" name="Largeimgkey" id="Largeimgkey"> <input type="submit" value="+"/><br><br>
+SmallImageKey: <input type="text" name="Smallimgkey" id="Smallimgkey"> <input type="submit" value="+"/><br><br>
+</form>
+
+</div>
+@using DiscordRPC.Logging
+@{
+    if(Request.Method == "POST") {
+    var client2 = new DiscordRPC.DiscordRpcClient(Request.Form["appid"]);
+  client2.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+
+	client2.OnReady += (sender, e) =>
+	{
+		Console.WriteLine("I got an update from {0}", e.User.Username);
+	};
+		
+	client2.OnPresenceUpdate += (sender, e) =>
+	{
+		Console.WriteLine("I got an update! {0}", e.Presence);
+	};
+	client2.Initialize();
+    client2.SetPresence(new DiscordRPC.RichPresence()
+	{
+		Details = Request.Query["Details"],
+		State = Request.Query["State"],
+		Assets = new DiscordRPC.Assets()
+		{
+			LargeImageKey = Request.Query["Largeimgkey"],
+			LargeImageText = Request.Query["Largeimgtxt"],
+			SmallImageKey = Request.Query["Smallimgkey"],
+      SmallImageText = Request.Query["Smallimgtxt"]
+		}
+	});
+    
+  }
+}
